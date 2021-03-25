@@ -57,3 +57,5 @@ summary(data)
 anovaRTbycategory <- aov(RT ~category+error(ppID/category), data = analysis_anova)
 summary(anovaRTbycategory)
 ```
+
+Example inspired from <https://osf.io/4zchf/> (Egger & Schiefner, 2020).
