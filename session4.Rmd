@@ -1,0 +1,69 @@
+---
+title: "Key Practices for the Language Scientist"
+subtitle: "HW for Session 2b: Power Analysis & \n Session 5: Best Practices for Coding in R"
+author: "Monica Wagner"
+date: "4/15/2021"
+output: pdf_document
+---
+
+This code was written for the 2021 Key Practices IMPRS course in order to perform a power analysis based on a simulated data set.
+
+```{r setup, include=FALSE}
+
+## Chunk settings
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+## Libraries
+library(here)
+library(pwr)
+library(simr)
+library(tidyverse)
+
+## Workgroup folder
+knitr::opts_knit$set(root.dir = here::here())
+```
+
+## Assignment
+
+Run a power analysis to find out how much participants you need to get a power of 0.80.
+
+## Analysis of simulated dataset
+
+```{r sim_load, include = FALSE}
+## Load data
+simData = read.table("SimData_SoPVoc.csv", sep = ",", header = TRUE)
+```
+
+```{r sim_plot}
+## Plot data
+ggplot(simData, aes(x = produce, y = meanRT)) +
+  geom_point() +
+  geom_smooth(method=lm) +
+  labs(title = "Scatterplot of infants' expressive vocabulary and \nword recognition reaction time (RT)", x = "Expressive vocabulary (#words produced)", y = "Word recognition RT (ms)") +
+  theme_minimal()
+```
+
+```{r sim_corr}
+simCorrResults = cor.test(simData$meanRT, simData$produce)
+print(simCorrResults)
+```
+
+A Pearson's correlation was conducted on the data set between number of words produced and mean word recognition RT. The results revealed a correlation of r = r(`r simCorrResults$parameter`) = `r round(simCorrResults$estimate, digits = 2)`, p = `r round(simCorrResults$p.value, digits = 3)`.
+
+Based on this, we'll assume a small effect size of 0.2 for our envisioned study.
+
+## Power calculation
+
+We run a power analysis for power = 0.80, r = 0.2, and p = 0.05.
+
+```{r}
+pwrResults = pwr.r.test(n = NULL,
+                        r = 0.2,
+                        sig.level = 0.05,
+                        power = 0.80,
+                        alternative = "two.sided")
+print(pwrResults)
+```
+
+Based on the power analysis, in order to have an 80% chance of detecting an effect, at least `r floor(pwrResults$n)` participants should be tested.
+
